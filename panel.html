@@ -4,28 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yayın Ekleme Paneli</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 20px; }
-        .container { max-width: 500px; margin: auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #333; }
-        form { display: flex; flex-direction: column; }
-        label { margin-bottom: 5px; font-weight: bold; }
-        input[type="url"] { padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px; background-color: #1DA1F2; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0d8de3; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
+<div class="container panel-container">
     <h1>Yeni Yayın Ekle</h1>
     <form id="addBroadcastForm">
         <label for="broadcastUrl">Twitter Canlı Yayın URL'si:</label>
         <input type="url" id="broadcastUrl" name="broadcastUrl" placeholder="https://x.com/i/broadcasts/..." required>
         <button type="submit">Yayını Ekle</button>
     </form>
+    <p id="message" style="text-align:center; margin-top:15px;"></p>
 </div>
+
+<script>
+    document.getElementById('addBroadcastForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const urlInput = document.getElementById('broadcastUrl');
+        const url = urlInput.value;
+        const messageElement = document.getElementById('message');
+
+        let broadcasts = JSON.parse(localStorage.getItem('broadcasts')) || [];
+        
+        // Aynı URL'nin tekrar eklenmesini engelle
+        if (broadcasts.includes(url)) {
+            messageElement.textContent = "Bu yayın zaten eklenmiş.";
+            messageElement.style.color = "orange";
+            return;
+        }
+
+        broadcasts.push(url);
+        localStorage.setItem('broadcasts', JSON.stringify(broadcasts));
+        
+        messageElement.textContent = "Yayın başarıyla eklendi!";
+        messageElement.style.color = "green";
+        urlInput.value = '';
+    });
+</script>
 
 </body>
 </html>
- 
