@@ -2,45 +2,46 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Kalori Tahmin Sonuçları</title>
+  <title>Tahmin Sonuçları</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+    function loadResults() {
+      const data = JSON.parse(localStorage.getItem("mealData")) || [];
+      const tbody = document.getElementById("results-body");
+      let total = 0;
+
+      data.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.mealType}</td>
+          <td>${entry.imageName}</td>
+          <td>${new Date(entry.timestamp).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById("total-count").innerText = data.length;
+    }
+
+    window.onload = loadResults;
+  </script>
 </head>
 <body>
   <div class="container">
-    <h1>📊 Tahmin Edilen Öğünler</h1>
+    <h1>📊 Kaydedilen Öğünler</h1>
 
     <table>
       <thead>
         <tr>
           <th>Öğün</th>
-          <th>Yemek Adı</th>
-          <th>Kalori (kcal)</th>
+          <th>Fotoğraf Adı</th>
+          <th>Zaman</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>Kahvaltı</td>
-          <td>Yulaf Ezmesi</td>
-          <td>250</td>
-        </tr>
-        <tr>
-          <td>Öğle</td>
-          <td>Tavuk Izgara</td>
-          <td>165</td>
-        </tr>
-        <tr>
-          <td>Akşam</td>
-          <td>Salata</td>
-          <td>80</td>
-        </tr>
-      </tbody>
+      <tbody id="results-body"></tbody>
     </table>
 
-    <div class="summary">
-      <p><strong>Toplam Kalori:</strong> 495 kcal</p>
-      <p><strong>Hedef Kalori:</strong> 1350 kcal</p>
-      <p class="status under">Bugünkü alım hedefin altında.</p>
-    </div>
+    <p><strong>Toplam öğün:</strong> <span id="total-count">0</span></p>
   </div>
 </body>
-</html>
+</html> 
