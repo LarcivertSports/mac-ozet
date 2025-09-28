@@ -3,98 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canlı Yayınlar</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #1a1a1a;
-        }
-        .broadcast-item {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-    </style>
+    <title>Canlı Yayın Akışı</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
     <h1>Canlı Yayın Akışı</h1>
-    <p>Bu sayfadaki yayınlar panel üzerinden eklenmektedir.</p>
+    <p>Bu sayfadaki yayınlar yerel belleğinizden yüklenmektedir.</p>
     <div id="broadcasts-container">
         </div>
 </div>
 
 <script>
-    // Arka uçtan yayınları getirme işlevi
-    function fetchBroadcasts() {
-        fetch('/broadcasts')
-            .then(response => response.json())
-            .then(urls => {
-                const container = document.getElementById('broadcasts-container');
-                container.innerHTML = ''; // İçeriği temizle
+    document.addEventListener('DOMContentLoaded', () => {
+        const broadcasts = JSON.parse(localStorage.getItem('broadcasts')) || [];
+        const container = document.getElementById('broadcasts-container');
 
-                urls.forEach(url => {
-                    // Twitter yayın kimliğini URL'den alıyoruz
-                    const broadcastId = url.split('/').pop();
-                    
-                    // Twitter'ın yerleştirme (embed) kodunu dinamik olarak oluşturuyoruz
-                    const blockquote = document.createElement('blockquote');
-                    blockquote.className = "twitter-tweet";
-                    blockquote.setAttribute("data-media-id", broadcastId);
-                    
-                    const p = document.createElement('p');
-                    p.setAttribute("lang", "en");
-                    p.setAttribute("dir", "ltr");
-                    p.textContent = `Yayın: ${broadcastId}`;
-                    
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.textContent = url;
+        if (broadcasts.length === 0) {
+            container.innerHTML = '<p style="text-align:center;">Henüz bir yayın eklenmemiş.</p>';
+            return;
+        }
 
-                    // Orijinal tweet/yayın bilgisini de ekliyoruz
-                    blockquote.appendChild(p);
-                    blockquote.appendChild(a);
+        broadcasts.reverse().forEach(url => {
+            const broadcastId = url.split('/').pop();
+            
+            const blockquote = document.createElement('blockquote');
+            blockquote.className = "twitter-tweet";
+            blockquote.setAttribute("data-media-id", broadcastId);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.textContent = url;
 
-                    const broadcastDiv = document.createElement('div');
-                    broadcastDiv.className = 'broadcast-item';
-                    broadcastDiv.appendChild(blockquote);
+            blockquote.appendChild(a);
 
-                    container.prepend(broadcastDiv); // En son ekleneni en üste koy
-                });
+            const broadcastDiv = document.createElement('div');
+            broadcastDiv.className = 'broadcast-item';
+            broadcastDiv.appendChild(blockquote);
+            
+            container.appendChild(broadcastDiv);
+        });
 
-                // Twitter'ın gömme kodlarını çalıştıran widget betiğini yüklüyoruz
-                // Eğer daha önce yüklenmediyse yükler.
-                if (typeof twttr !== 'undefined') {
-                    twttr.widgets.load(container);
-                } else {
-                    const script = document.createElement('script');
-                    script.async = true;
-                    script.src = "https://platform.twitter.com/widgets.js";
-                    script.charset = "utf-8";
-                    document.body.appendChild(script);
-                }
-            })
-            .catch(error => console.error('Hata:', error));
-    }
-
-    // Sayfa yüklendiğinde yayınları getir
-    window.onload = fetchBroadcasts;
+        // Twitter widget script'ini yüklüyoruz.
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = "https://platform.twitter.com/widgets.js";
+        script.charset = "utf-8";
+        document.body.appendChild(script);
+    });
 </script>
 
 </body>
