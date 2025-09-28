@@ -4,53 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canlı Yayın Akışı</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; color: #1a1a1a; }
+        .broadcast-item { background-color: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #eee; text-align: center; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Canlı Yayın Akışı</h1>
-    <p>Bu sayfadaki yayınlar yerel belleğinizden yüklenmektedir.</p>
+    <p style="text-align: center;">Bu sayfadaki yayınlar sunucudan yüklenmektedir.</p>
     <div id="broadcasts-container">
         </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const broadcasts = JSON.parse(localStorage.getItem('broadcasts')) || [];
-        const container = document.getElementById('broadcasts-container');
+        fetch('/broadcasts')
+            .then(response => response.json())
+            .then(urls => {
+                const container = document.getElementById('broadcasts-container');
+                if (urls.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;">Henüz bir yayın eklenmemiş.</p>';
+                    return;
+                }
+                
+                urls.forEach(url => {
+                    const broadcastId = url.split('/').pop();
+                    
+                    const blockquote = document.createElement('blockquote');
+                    blockquote.className = "twitter-tweet";
+                    blockquote.setAttribute("data-media-id", broadcastId);
+                    
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.textContent = url;
+                    blockquote.appendChild(a);
 
-        if (broadcasts.length === 0) {
-            container.innerHTML = '<p style="text-align:center;">Henüz bir yayın eklenmemiş.</p>';
-            return;
-        }
+                    const broadcastDiv = document.createElement('div');
+                    broadcastDiv.className = 'broadcast-item';
+                    broadcastDiv.appendChild(blockquote);
+                    
+                    container.appendChild(broadcastDiv);
+                });
 
-        broadcasts.reverse().forEach(url => {
-            const broadcastId = url.split('/').pop();
-            
-            const blockquote = document.createElement('blockquote');
-            blockquote.className = "twitter-tweet";
-            blockquote.setAttribute("data-media-id", broadcastId);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.textContent = url;
-
-            blockquote.appendChild(a);
-
-            const broadcastDiv = document.createElement('div');
-            broadcastDiv.className = 'broadcast-item';
-            broadcastDiv.appendChild(blockquote);
-            
-            container.appendChild(broadcastDiv);
-        });
-
-        // Twitter widget script'ini yüklüyoruz.
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = "https://platform.twitter.com/widgets.js";
-        script.charset = "utf-8";
-        document.body.appendChild(script);
+                if (typeof twttr !== 'undefined') {
+                    twttr.widgets.load(container);
+                } else {
+                    const script = document.createElement('script');
+                    script.async = true;
+                    script.src = "https://platform.twitter.com/widgets.js";
+                    script.charset = "utf-8";
+                    document.body.appendChild(script);
+                }
+            })
+            .catch(error => console.error('Yayınlar yüklenirken hata oluştu:', error));
     });
 </script>
 
