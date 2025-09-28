@@ -5,23 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Yemek Kalori Tahmini</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+    let mealCount = 1;
+
+    function addMealInput() {
+      mealCount++;
+      const container = document.getElementById("meals-container");
+
+      const mealDiv = document.createElement("div");
+      mealDiv.className = "meal-block";
+
+      mealDiv.innerHTML = `
+        <label for="image${mealCount}">Yemek Fotoğrafı ${mealCount}:</label>
+        <input type="file" id="image${mealCount}" name="image${mealCount}" accept="image/*" required>
+
+        <label for="meal${mealCount}">Öğün Seç:</label>
+        <select id="meal${mealCount}" name="meal_type${mealCount}">
+          <option value="Kahvaltı">Kahvaltı</option>
+          <option value="Öğle">Öğle</option>
+          <option value="Akşam">Akşam</option>
+        </select>
+        <hr>
+      `;
+
+      container.appendChild(mealDiv);
+    }
+  </script>
 </head>
 <body>
   <div class="container">
-    <h1>🍽️ Yemek Kalori Tahmini</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <label for="image">Yemek Fotoğrafı Yükle:</label>
-      <input type="file" id="image" name="image" accept="image/*" required>
+    <h1>🍽️ Birden Fazla Öğün Ekle</h1>
 
-      <label for="meal">Öğün Seç:</label>
-      <select id="meal" name="meal_type">
-        <option value="Kahvaltı">Kahvaltı</option>
-        <option value="Öğle">Öğle</option>
-        <option value="Akşam">Akşam</option>
-      </select>
+    <form action="/upload_multiple" method="post" enctype="multipart/form-data">
+      <div id="meals-container">
+        <div class="meal-block">
+          <label for="image1">Yemek Fotoğrafı 1:</label>
+          <input type="file" id="image1" name="image1" accept="image/*" required>
 
+          <label for="meal1">Öğün Seç:</label>
+          <select id="meal1" name="meal_type1">
+            <option value="Kahvaltı">Kahvaltı</option>
+            <option value="Öğle">Öğle</option>
+            <option value="Akşam">Akşam</option>
+          </select>
+          <hr>
+        </div>
+      </div>
+
+      <button type="button" onclick="addMealInput()">➕ Öğün Ekle</button>
       <button type="submit">Tahmin Et</button>
     </form>
   </div>
 </body>
-</html>
+</html> 
