@@ -22,10 +22,13 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         img {
-            max-width: 100%;
-            height: auto;
+            max-width: 100%; /* Ekran genişliğinden fazla büyümesini engeller */
+            width: 400px;    /* Genişliği 400 piksel olarak ayarlar */
+            height: auto;    /* Yüksekliği orantılı olarak ayarlar */
             display: block;
-            margin-bottom: 20px;
+            margin: 0 auto 20px auto; /* Ortalamak için margin eklendi */
+            border: 1px solid #ddd; /* Küçük bir çerçeve ekleyebiliriz */
+            border-radius: 5px; /* Köşeleri biraz yumuşatır */
         }
     </style>
 </head>
